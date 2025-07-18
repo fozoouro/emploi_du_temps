@@ -1,23 +1,22 @@
-self.addEventListener("install", function (e) {
-    console.log("Service Worker installé.");
+self.addEventListener('install', (e) => {
     e.waitUntil(
-      caches.open("agenda-cache").then(function (cache) {
+      caches.open('emploi-cache').then((cache) => {
         return cache.addAll([
-          "/",
-          "/index.html",
-          "/style.css",
-          "/script.js",
-          "/manifest.json"
+          '/',
+          '/index.html',
+          '/style.css',
+          '/script.js',
+          '/manifest.json',
+          '/icon-192.png'
         ]);
       })
     );
   });
   
-  self.addEventListener("fetch", function (e) {
+  self.addEventListener('fetch', (e) => {
     e.respondWith(
-      caches.match(e.request).then(function (response) {
+      caches.match(e.request).then((response) => {
         return response || fetch(e.request);
       })
     );
-  });
-  
+  });  

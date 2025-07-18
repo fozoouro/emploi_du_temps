@@ -2,40 +2,26 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mon Emploi du Temps</title>
-
-  <!-- FullCalendar CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css" rel="stylesheet" />
-
-  <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#007bff" />
-  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3595/3595455.png" />
-  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3595/3595455.png" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="icon-192.png" />
+  <script src="script.js" defer></script>
 </head>
 <body>
-  <div class="container">
-    <h1>🗓️ Mon Emploi du Temps</h1>
+  <h1>📆 Mon Emploi du Temps</h1>
+  <form id="activityForm">
+    <input type="text" id="activityName" placeholder="Nom de l'activité" required />
+    <input type="datetime-local" id="activityTime" required />
+    <select id="activityCategory">
+      <option value="Travail">Travail</option>
+      <option value="Étude">Étude</option>
+      <option value="Perso">Perso</option>
+    </select>
+    <button type="submit">Ajouter</button>
+  </form>
 
-    <form id="task-form">
-      <input type="text" id="title" placeholder="Nom de l'activité" required />
-      <input type="datetime-local" id="datetime" required />
-      <select id="category" required>
-        <option value="" disabled selected>Catégorie</option>
-        <option value="travail">Travail</option>
-        <option value="perso">Perso</option>
-        <option value="sport">Sport</option>
-        <option value="autre">Autre</option>
-      </select>
-      <button type="submit">Ajouter</button>
-    </form>
-
-    <div id="calendar"></div>
-  </div>
-
-  <!-- FullCalendar JS -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.js"></script>
-  <script src="script.js"></script>
+  <ul id="activityList"></ul>
 </body>
 </html>
