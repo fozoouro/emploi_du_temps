@@ -1,37 +1,64 @@
-const form = document.getElementById('activityForm');
-const list = document.getElementById('activityList');
+document.addEventListener("DOMContentLoaded", function () {
+  let calendarEl = document.getElementById("calendar");
+  let calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: "dayGridMonth",
+    locale: "fr",
+    events: JSON.parse(localStorage.getItem("activities") || "[]"),
+    eventClick: function(info) {
+      if (confirm("Supprimer cette activité ?")) {
+        deleteEventById(calendar, info.event.id);
+      }
+    }
+  });
+  calendar.render();
 
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const name = document.getElementById('activityName').value;
-  const time = document.getElementById('activityTime').value;
-  const category = document.getElementById('activityCategory').value.toLowerCase();
+  const form = document.getElementById("activityForm");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const name = document.getElementById("activityName").value;
+    const time = document.getElementById("activityTime").value;
+    const category = document.getElementById("activityCategory").value;
 
-  const li = document.createElement('li');
-  li.classList.add(category);
-  li.textContent = `${name} - ${new Date(time).toLocaleString()} (${category})`;
+    const activity = {
+      id: Date.now().toString(),
+      title: name + " (" + category + ")",
+      start: time,
+      color: category === "Travail" ? "#2196f3" : category === "Étude" ? "#4caf50" : "#ff9800"
+    };
 
-  list.appendChild(li);
-  form.reset();
+    addDeletableEvent(calendar, activity);
+    form.reset();
+    scheduleNotification(activity.title, activity.start);
+  });
 
-  scheduleNotification(name, time);
-});
-
-function scheduleNotification(title, time) {
-  const delay = new Date(time).getTime() - Date.now();
-  if (delay > 0 && Notification.permission === 'granted') {
-    setTimeout(() => {
-      new Notification("⏰ Rappel", {
-        body: `${title} commence maintenant !`,
-      });
-    }, delay);
+  function scheduleNotification(title, time) {
+    const delay = new Date(time).getTime() - Date.now();
+    if (delay > 0 && Notification.permission === "granted") {
+      setTimeout(() => {
+        new Notification("⏰ Rappel", { body: `${title} commence maintenant !` });
+      }, delay);
+    }
   }
-}
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js');
-}
+  function addDeletableEvent(calendar, activity) {
+    calendar.addEvent(activity);
+    let activities = JSON.parse(localStorage.getItem("activities") || "[]");
+    activities.push(activity);
+    localStorage.setItem("activities", JSON.stringify(activities));
+  }
 
-if (Notification.permission !== 'granted') {
-  Notification.requestPermission();
-}
+  function deleteEventById(calendar, id) {
+    const event = calendar.getEventById(id);
+    if (event) event.remove();
+    let activities = JSON.parse(localStorage.getItem("activities") || "[]");
+    activities = activities.filter((a) => a.id !== id);
+    localStorage.setItem("activities", JSON.stringify(activities));
+  }
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
+  }
+  if (Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+});
